@@ -10,12 +10,13 @@ public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance;
     
-    [SerializeField] private DialogueTriggerMapSO triggers;
-    [SerializeField] private InputActionAsset inputActions;
+    public DialogueTriggerMapSO triggers;
+    public InputActionAsset inputActions;
     
     // Dialogue Box
-    [SerializeField] private GameObject dialogueBox;
     [SerializeField] private float typeSpeed;
+    public GameObject dialogueCanvas;
+    private GameObject dialogueBox;
     private Image characterPortrait;
     private TMP_Text characterName;
     private TMP_Text dialogueText;
@@ -41,26 +42,35 @@ public class DialogueManager : MonoBehaviour
                            "Please create a DialogueTriggerMap ScriptableObject and assign it in the Inspector.");
         }
 
-        if (dialogueBox == null)
+        if (dialogueCanvas == null)
         {
-            Debug.LogError("No dialogue box is assigned to DialogueManager. Please import the one from the package.");
+            Debug.LogError("No dialogue canvas is assigned to DialogueManager. Please import the one from the package.");
         }
         else
         {
-            characterPortrait = dialogueBox.transform.Find("Portrait").GetComponent<Image>();
-            characterName = dialogueBox.transform.Find("SpeakerName").GetComponent<TMP_Text>();
-            dialogueText = dialogueBox.transform.Find("Text").GetComponent<TMP_Text>();
-
-            string errorMessage = "Couldn't find the references to: ";
-            if (characterPortrait == null) errorMessage += "Character portrait ";
-            if (characterName == null) errorMessage += "Character name ";
-            if (dialogueText == null) errorMessage += "Dialogue text ";
-
-            if (errorMessage != "Couldn't find the references to: ")
+            dialogueBox = dialogueCanvas.transform.GetChild(0).gameObject;
+            if (dialogueBox == null)
             {
-                Debug.LogError(errorMessage + ". Please check the dialogue box prefab and ensure the children's names have not been changed.");
+                Debug.LogError("Couldn't find the references to dialogue Box ");
+            }
+            else
+            {
+                characterPortrait = dialogueBox.transform.Find("Portrait").GetComponent<Image>();
+                characterName = dialogueBox.transform.Find("SpeakerName").GetComponent<TMP_Text>();
+                dialogueText = dialogueBox.transform.Find("Text").GetComponent<TMP_Text>();
+
+                string errorMessage = "Couldn't find the references to: ";
+                if (characterPortrait == null) errorMessage += "Character portrait ";
+                if (characterName == null) errorMessage += "Character name ";
+                if (dialogueText == null) errorMessage += "Dialogue text ";
+
+                if (errorMessage != "Couldn't find the references to: ")
+                {
+                    Debug.LogError(errorMessage + ". Please check the dialogue box prefab and ensure the children's names have not been changed.");
+                }
             }
         }
+        
 
         if (inputActions == null)
         {
@@ -78,6 +88,12 @@ public class DialogueManager : MonoBehaviour
 
     public void StartDialogue(string trigger)
     {
+        if (currentNode != null)
+        {
+            Debug.LogWarning("Dialogue is already open.");
+            return;
+        }
+        
         currentNode = triggers.GetDialogueStart(trigger);
 
         if (currentNode == null)

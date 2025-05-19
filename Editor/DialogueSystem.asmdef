@@ -2,7 +2,8 @@
     "name": "DialogueSystem.Editor",
     "rootNamespace": "",
     "references": [
-        "DialogueSystem.Runtime"
+        "DialogueSystem.Runtime",
+        "Unity.InputSystem"
     ],
     "includePlatforms": [
         "Editor"
