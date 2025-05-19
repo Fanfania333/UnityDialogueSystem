@@ -1,0 +1,9 @@
+{
+    "name": "com.fanfania.dialogue-system",
+    "version": "0.0.1",
+    "description": "This is a package that provides basic dialogue and tag functionality for RPG-like video games.",
+    "displayName": "Dialogue System",
+    "author": {
+        "name": "Ilter Ulutas (Fanfania333)"
+    }
+}
