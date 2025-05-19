@@ -82,6 +82,21 @@ public class AutoSetup : EditorWindow
             Debug.LogError("Error in finding the input actions file");
         }
         
+        // Copy the dialogue choice button prefab
+        string choiceSourcePath = "Packages/com.fanfania.dialogue-system/Resources/DialogueChoiceButton.prefab";
+        string choiceTargetPath = Path.Combine(path, "DialogueChoiceButton.prefab");
+        choiceTargetPath = AssetDatabase.GenerateUniqueAssetPath(choiceTargetPath);
+
+        if (File.Exists(choiceSourcePath))
+        {
+            File.Copy(choiceSourcePath, choiceTargetPath, false);
+            AssetDatabase.ImportAsset(choiceTargetPath);
+        }
+        else
+        {
+            Debug.LogError("Error in finding the choice button prefab");
+        }
+        
         AssetDatabase.Refresh();
         
         if (canvasInstance != null)
@@ -99,6 +114,7 @@ public class AutoSetup : EditorWindow
             dm.dialogueCanvas = canvasInstance;
             dm.triggers = asset;
             dm.inputActions = AssetDatabase.LoadAssetAtPath<InputActionAsset>(inputTargetPath);
+            dm.choiceButtonPrefab = AssetDatabase.LoadAssetAtPath<GameObject>(choiceTargetPath);
         }
     }
 }

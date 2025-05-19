@@ -45,10 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 9327f75046505024d96ab0f4b718aff7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  triggers: {fileID: 11400000, guid: 8dd11c663f0a81f47a2f826004af6b57, type: 2}
-  inputActions: {fileID: -944628639613478452, guid: 523c7beb1cecd6749a07ae0636f9578f, type: 3}
-  dialogueCanvas: {fileID: 0}
+  triggers: {fileID: 11400000, guid: 225251be0830c2f46bd2db89bd3647fa, type: 2}
+  inputActions: {fileID: -944628639613478452, guid: 081b5beea5aa70749b5280033e9b37d9, type: 3}
+  choiceButtonPrefab: {fileID: 1728003426957717220, guid: bd8b073269598124f916eb6cdaa0ae48, type: 3}
   typeSpeed: 0.05
+  dialogueCanvas: {fileID: 0}
 --- !u!114 &779896123520922542
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -12,16 +12,19 @@ public class DialogueManager : MonoBehaviour
     
     public DialogueTriggerMapSO triggers;
     public InputActionAsset inputActions;
+    public GameObject choiceButtonPrefab;
     
     // Dialogue Box
     [SerializeField] private float typeSpeed;
     public GameObject dialogueCanvas;
     private GameObject dialogueBox;
+    private GameObject choiceMenu;
     private Image characterPortrait;
     private TMP_Text characterName;
     private TMP_Text dialogueText;
 
     private bool isTyping;
+    private bool isChoosing;
     private DialogueNodeSO currentNode;
     
     // Input
@@ -48,7 +51,14 @@ public class DialogueManager : MonoBehaviour
         }
         else
         {
-            dialogueBox = dialogueCanvas.transform.GetChild(0).gameObject;
+            dialogueBox = dialogueCanvas.transform.Find("DialogueBox").gameObject;
+            choiceMenu = dialogueCanvas.transform.Find("DialogueChoices").gameObject;
+            
+            if (choiceMenu == null)
+            {
+                Debug.LogError("Couldn't find the references to choice menu.");
+            }
+            
             if (dialogueBox == null)
             {
                 Debug.LogError("Couldn't find the references to dialogue Box ");
@@ -71,6 +81,8 @@ public class DialogueManager : MonoBehaviour
             }
         }
         
+        dialogueBox.SetActive(false);
+        choiceMenu.SetActive(false);
 
         if (inputActions == null)
         {
@@ -107,6 +119,11 @@ public class DialogueManager : MonoBehaviour
     
     private void AdvanceDialogue()
     {
+        if (isChoosing)
+        {
+            return;
+        }
+        
         if (currentNode != null)
         {
             ShowDialogue();
@@ -156,6 +173,46 @@ public class DialogueManager : MonoBehaviour
 
     private void GetNextNode()
     {
-        currentNode = currentNode.NextNode;
+        if (currentNode.NextNodes.Count == 0)
+        {
+            currentNode = null;
+        }
+        else if (currentNode.NextNodes.Count == 1)
+        {
+            currentNode = currentNode.NextNodes[0];
+        }
+        else
+        {
+            DisplayChoiceMenu();
+        }
+    }
+
+    private void DisplayChoiceMenu()
+    {
+        isChoosing = true;
+        choiceMenu.SetActive(true);
+
+        for (int i = 0; i < currentNode.NextNodes.Count; i++)
+        {
+            GameObject choiceButton = Instantiate(choiceButtonPrefab, choiceMenu.transform);
+            choiceButton.GetComponentInChildren<TMP_Text>().text = currentNode.NextNodes[i].OptionText;
+            
+            int choiceIndex = i;
+            choiceButton.GetComponent<Button>().onClick.AddListener(() => OnChoiceSelected(choiceIndex));
+        }
+    }
+
+    private void OnChoiceSelected(int index)
+    {
+        currentNode = currentNode.NextNodes[index];
+
+        for (int i = choiceMenu.transform.childCount - 1; i >= 0; i--)
+        {
+            Destroy(choiceMenu.transform.GetChild(i).gameObject);
+        }
+        
+        isChoosing = false;
+        AdvanceDialogue();
+        choiceMenu.SetActive(false);
     }
 }
