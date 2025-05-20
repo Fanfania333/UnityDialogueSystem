@@ -8,7 +8,7 @@ public class DialogueChoiceSO : ScriptableObject
     [SerializeField] private string choiceDescription;
     public string ChoiceDescription => choiceDescription;
     
-    [SerializeField] private DialogueNodeSO nextNode;
+    [SerializeField] public DialogueNodeSO nextNode;
     public DialogueNodeSO NextNode => nextNode;
 
     [SerializeField] private ConditionGroup visibleConditions;

@@ -1,0 +1,8 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" xsi="http://www.w3.org/2001/XMLSchema-instance" engine="UnityEngine.UIElements" editor="UnityEditor.UIElements" noNamespaceSchemaLocation="../../../UIElementsSchema/UIElements.xsd" editor-extension-mode="False">
+    <Style src="project://database/Packages/com.fanfania.dialogue-system/Editor/DialogueChoiceCreator.uss?fileID=7433441132597879392&amp;guid=1a241eb555aa6ab42afcec5ea3d3eeba&amp;type=3#DialogueChoiceCreator" />
+    <ui:Label tabindex="-1" text="Welcome to the Dialogue Choice Creator" parse-escape-sequences="true" display-tooltip-when-elided="true" name="Title" style="font-size: 18px; -unity-text-align: middle-center; -unity-font-style: bold; white-space: normal;" />
+    <ui:Label tabindex="-1" text="Write the name of the choice and dialogue node and press Create." parse-escape-sequences="true" display-tooltip-when-elided="true" style="font-size: 16px; white-space: normal;" />
+    <ui:Toggle label="Auto-Add to Selected DialogueNode" name="autoadd" view-data-key="autoadd" />
+    <ui:TextField picking-mode="Ignore" label="Name" value="Filler" name="name" view-data-key="name" />
+    <ui:Button text="Create" parse-escape-sequences="true" display-tooltip-when-elided="true" view-data-key="create" name="create" />
+</ui:UXML>

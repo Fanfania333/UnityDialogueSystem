@@ -11,6 +11,6 @@ public class DialogueNodeSO : ScriptableObject
     [SerializeField] [TextArea] private string text;
     public string Text => text;
     
-    [SerializeField] private List<DialogueChoiceSO> nextChoices;
+    [SerializeField] public List<DialogueChoiceSO> nextChoices;
     public List<DialogueChoiceSO> NextChoices => nextChoices;
 }
