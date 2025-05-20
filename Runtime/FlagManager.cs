@@ -27,23 +27,36 @@ public class FlagManager : MonoBehaviour
         public string value;
     }
     
+    public static FlagManager Instance;
+    
     private HashSet<string> boolFlags;
-    public List<string> boolFlagSerialize;
+    [HideInInspector] public List<string> boolFlagSerialize;
     
     private Dictionary<string, int> intFlags;
-    public List<StringIntPair> intFlagSerialize;
+    [HideInInspector] public List<StringIntPair> intFlagSerialize;
     
     private Dictionary<string, float> floatFlags;
-    public List<StringFloatPair> floatFlagSerialize;
+    [HideInInspector] public List<StringFloatPair> floatFlagSerialize;
     
     private Dictionary<string, string> stringFlags;
-    public List<StringStringPair> stringFlagSerialize;
+    [HideInInspector] public List<StringStringPair> stringFlagSerialize;
+
+    private void Awake()
+    {
+        if (Instance != null && Instance != this)
+        {
+            Destroy(this.gameObject);
+        }
+        
+        Instance = this;
+    }
 
     private void Start()
     {
         boolFlags = new HashSet<string>();
         intFlags = new Dictionary<string,int>();
         floatFlags = new Dictionary<string, float>();
+        stringFlags = new Dictionary<string, string>();
     }
 
     public bool AddFlag(string flag)
@@ -162,6 +175,68 @@ public class FlagManager : MonoBehaviour
             return stringFlags[key] != value;
         }
 
+        return false;
+    }
+
+    public bool EvaluateCondition(ConditionGroup group)
+    {
+        if (group == null)
+        {
+            return true;
+        }
+        
+        if (group.logicType == LogicType.VALUE)
+        {
+            if (string.IsNullOrWhiteSpace(group.value))
+            {
+                return true;
+            }
+            
+            return HasFlag(group.value);
+        }
+
+        if (group.conditions.Count == 0)
+        {
+            return true;
+        }
+
+        if (group.logicType == LogicType.OR)
+        {
+            foreach (var subGroup in group.conditions)
+            {
+                if (EvaluateCondition(subGroup))
+                {
+                    return true;
+                }
+            }
+            
+            return false;
+        }
+
+        if (group.logicType == LogicType.AND)
+        {
+            foreach (var subGroup in group.conditions)
+            {
+                if (!EvaluateCondition(subGroup))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        if (group.logicType == LogicType.NOT)
+        {
+            if (group.conditions.Count > 1)
+            {
+                Debug.LogWarning("NOT logic type only supports one condition group, the rest will be ignored.");
+            }
+        
+            return !EvaluateCondition(group.conditions[0]);
+        }
+        
+        Debug.LogError("Invalid logic type: " + group.logicType);
         return false;
     }
 

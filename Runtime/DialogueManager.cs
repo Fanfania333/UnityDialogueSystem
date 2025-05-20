@@ -30,6 +30,8 @@ public class DialogueManager : MonoBehaviour
     // Input
     private InputAction continueAction;
 
+    private List<DialogueChoiceSO> currentVisibleChoices;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -173,13 +175,22 @@ public class DialogueManager : MonoBehaviour
 
     private void GetNextNode()
     {
-        if (currentNode.NextNodes.Count == 0)
+        currentVisibleChoices = new List<DialogueChoiceSO>();
+        foreach (var choice in currentNode.NextChoices)
+        {
+            if (FlagManager.Instance.EvaluateCondition(choice.VisibleConditions))
+            {
+                currentVisibleChoices.Add(choice);
+            }
+        }
+        
+        if (currentVisibleChoices.Count == 0)
         {
             currentNode = null;
         }
-        else if (currentNode.NextNodes.Count == 1)
+        else if (currentVisibleChoices.Count == 1)
         {
-            currentNode = currentNode.NextNodes[0];
+            currentNode = currentVisibleChoices[0].NextNode;
         }
         else
         {
@@ -192,19 +203,25 @@ public class DialogueManager : MonoBehaviour
         isChoosing = true;
         choiceMenu.SetActive(true);
 
-        for (int i = 0; i < currentNode.NextNodes.Count; i++)
+        for (int i = 0; i < currentVisibleChoices.Count; i++)
         {
             GameObject choiceButton = Instantiate(choiceButtonPrefab, choiceMenu.transform);
-            choiceButton.GetComponentInChildren<TMP_Text>().text = currentNode.NextNodes[i].OptionText;
+            choiceButton.GetComponentInChildren<TMP_Text>().text = currentVisibleChoices[i].ChoiceDescription;
             
             int choiceIndex = i;
-            choiceButton.GetComponent<Button>().onClick.AddListener(() => OnChoiceSelected(choiceIndex));
+            Button button = choiceButton.GetComponent<Button>();
+            button.onClick.AddListener(() => OnChoiceSelected(choiceIndex));
+
+            if (!FlagManager.Instance.EvaluateCondition(currentVisibleChoices[i].UnlockedConditions))
+            {
+                button.interactable = false;
+            }
         }
     }
 
     private void OnChoiceSelected(int index)
     {
-        currentNode = currentNode.NextNodes[index];
+        currentNode = currentVisibleChoices[index].NextNode;
 
         for (int i = choiceMenu.transform.childCount - 1; i >= 0; i--)
         {
@@ -214,5 +231,6 @@ public class DialogueManager : MonoBehaviour
         isChoosing = false;
         AdvanceDialogue();
         choiceMenu.SetActive(false);
+        currentVisibleChoices = null;
     }
 }
