@@ -5,6 +5,23 @@ using UnityEngine;
 [CreateAssetMenu(fileName = "DialogueChoice", menuName = "Dialogue Manager/Dialogue Choice")]
 public class DialogueChoiceSO : ScriptableObject
 {
+    [System.Serializable]
+    public class DialogueResult
+    {
+        public enum ResultType
+        {
+            SET,
+            ADD
+        }
+        
+        public FlagType flagType;
+        public ResultType resultType;
+        public string key;
+        public int intValue;
+        public float floatValue;
+        public string stringValue;
+    }
+    
     [SerializeField] private string choiceDescription;
     public string ChoiceDescription => choiceDescription;
     
@@ -16,4 +33,7 @@ public class DialogueChoiceSO : ScriptableObject
     
     [SerializeField] private ConditionGroup unlockedConditions;
     public ConditionGroup UnlockedConditions => unlockedConditions;
+    
+    [SerializeField] private List<DialogueResult> results;
+    public List<DialogueResult> Results => results;
 }

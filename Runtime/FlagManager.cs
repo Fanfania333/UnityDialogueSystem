@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using System.Text.RegularExpressions;
 using UnityEngine;
 
+public enum FlagType
+{
+    Bool, Int, Float, String
+}
+
 public class FlagManager : MonoBehaviour
 {
     [Serializable]
@@ -81,6 +86,17 @@ public class FlagManager : MonoBehaviour
         return true;
     }
 
+    public bool AddToIntFlag(string flag, int value)
+    {
+        flag = flag.Trim();
+        if (!FlagNameIsValid(flag)) return false;
+        if (!intFlags.TryAdd(flag, value))
+        {
+            intFlags[flag] = value + intFlags[flag];
+        }
+        return true;
+    }
+
     public bool SetFloatFlag(string flag, float value)
     {
         flag = flag.Trim();
@@ -89,10 +105,21 @@ public class FlagManager : MonoBehaviour
         return true;
     }
     
+    public bool AddToFloatFlag(string flag, float value)
+    {
+        flag = flag.Trim();
+        if (!FlagNameIsValid(flag)) return false;
+        if (!floatFlags.TryAdd(flag, value))
+        {
+            floatFlags[flag] = value + floatFlags[flag];
+        }
+        return true;
+    }
+    
     public bool SetStringFlag(string flag, string value)
     {
         flag = flag.Trim();
-        value =value.Trim();
+        value = value.Trim();
         if (!FlagNameIsValid(flag)) return false;
         stringFlags[flag] = value;
         return true;

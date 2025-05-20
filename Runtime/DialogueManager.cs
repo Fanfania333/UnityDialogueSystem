@@ -67,7 +67,7 @@ public class DialogueManager : MonoBehaviour
             }
             else
             {
-                characterPortrait = dialogueBox.transform.Find("Portrait").GetComponent<Image>();
+                characterPortrait = dialogueBox.transform.Find("PortraitFrame").Find("PortraitImage").GetComponent<Image>();
                 characterName = dialogueBox.transform.Find("SpeakerName").GetComponent<TMP_Text>();
                 dialogueText = dialogueBox.transform.Find("Text").GetComponent<TMP_Text>();
 
@@ -222,6 +222,39 @@ public class DialogueManager : MonoBehaviour
     private void OnChoiceSelected(int index)
     {
         currentNode = currentVisibleChoices[index].NextNode;
+
+        foreach (var result in currentVisibleChoices[index].Results)
+        {
+            switch (result.flagType)
+            {
+                case FlagType.Bool:
+                    FlagManager.Instance.AddFlag(result.key);
+                    break;
+                case FlagType.Int:
+                    if (result.resultType == DialogueChoiceSO.DialogueResult.ResultType.SET)
+                    {
+                        FlagManager.Instance.SetIntFlag(result.key, result.intValue);
+                    }
+                    else if (result.resultType == DialogueChoiceSO.DialogueResult.ResultType.ADD)
+                    {
+                        FlagManager.Instance.AddToIntFlag(result.key, result.intValue);
+                    }
+                    break;
+                case FlagType.Float:
+                    if (result.resultType == DialogueChoiceSO.DialogueResult.ResultType.SET)
+                    {
+                        FlagManager.Instance.SetFloatFlag(result.key, result.floatValue);
+                    }
+                    else if (result.resultType == DialogueChoiceSO.DialogueResult.ResultType.ADD)
+                    {
+                        FlagManager.Instance.AddToFloatFlag(result.key, result.floatValue);
+                    }
+                    break;
+                case FlagType.String:
+                    FlagManager.Instance.SetStringFlag(result.key, result.stringValue);
+                    break;
+            }
+        }
 
         for (int i = choiceMenu.transform.childCount - 1; i >= 0; i--)
         {
