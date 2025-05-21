@@ -6,16 +6,25 @@ using UnityEngine.UI;
 using TMPro;
 using UnityEngine.InputSystem;
 
+#if USE_LOCALIZATION
+using UnityEngine.Localization;
+using UnityEngine.Localization.Components;
+#endif
+
 public class DialogueManager : MonoBehaviour
 {
     public static DialogueManager Instance;
     
+    [Header("Settings")]
+    [SerializeField] private float typeSpeed;
+    [SerializeField] private bool useLocalization;
+    
+    [Header("References")]
     public DialogueTriggerMapSO triggers;
     public InputActionAsset inputActions;
     public GameObject choiceButtonPrefab;
     
     // Dialogue Box
-    [SerializeField] private float typeSpeed;
     public GameObject dialogueCanvas;
     private GameObject dialogueBox;
     private GameObject choiceMenu;
@@ -31,6 +40,10 @@ public class DialogueManager : MonoBehaviour
     private InputAction continueAction;
 
     private List<DialogueChoiceSO> currentVisibleChoices;
+    
+    #if USE_LOCALIZATION
+    LocalizedString currentLocalizedString;
+    #endif
 
     private void Awake()
     {
@@ -150,13 +163,51 @@ public class DialogueManager : MonoBehaviour
         }
         
         characterPortrait.sprite = currentNode.Speaker.Portrait;
-        characterName.text = currentNode.Speaker.Name;
-        StartCoroutine(TypeText(currentNode.Text));
+        string characterNameLocal = currentNode.Speaker.Name;
+        
+        #if USE_LOCALIZATION
+            if (useLocalization)
+            {
+                currentLocalizedString = new LocalizedString();
+                currentLocalizedString.TableReference = currentNode.Speaker.TableReference;
+                currentLocalizedString.TableEntryReference = characterNameLocal;
+
+                try
+                {
+                    characterNameLocal = currentLocalizedString.GetLocalizedString();
+                }
+                catch
+                {
+                    Debug.LogError($"Table reference {currentLocalizedString.TableReference} could not be found. Please check your localization.");
+                }
+            }
+        #endif
+        
+        characterName.text = characterNameLocal;
+        StartCoroutine(TypeText(currentNode.Text, currentNode.TableReference));
     }
 
-    private IEnumerator TypeText(string fullText)
+    private IEnumerator TypeText(string fullText, string localizationTableReference = "")
     {
         isTyping = true;
+        
+        #if USE_LOCALIZATION
+        if (useLocalization)
+        {
+            currentLocalizedString = new LocalizedString();
+            currentLocalizedString.TableReference = localizationTableReference;
+            currentLocalizedString.TableEntryReference = fullText;
+            try
+            {
+                fullText = currentLocalizedString.GetLocalizedString();
+            }
+            catch
+            {
+                Debug.LogError($"Table reference {currentLocalizedString.TableReference} could not be found. Please check your localization.");
+            }
+        }
+        #endif
+        
         dialogueText.text = fullText;
         dialogueText.ForceMeshUpdate();
         int totalChars = dialogueText.textInfo.characterCount;
@@ -206,7 +257,26 @@ public class DialogueManager : MonoBehaviour
         for (int i = 0; i < currentVisibleChoices.Count; i++)
         {
             GameObject choiceButton = Instantiate(choiceButtonPrefab, choiceMenu.transform);
-            choiceButton.GetComponentInChildren<TMP_Text>().text = currentVisibleChoices[i].ChoiceDescription;
+            string choiceText = currentVisibleChoices[i].ChoiceDescription;
+            
+            #if USE_LOCALIZATION
+                if (useLocalization)
+                {
+                    currentLocalizedString = new LocalizedString();
+                    currentLocalizedString.TableReference = currentVisibleChoices[i].TableReference;
+                    currentLocalizedString.TableEntryReference = choiceText;
+                    try
+                    {
+                        choiceText = currentLocalizedString.GetLocalizedString();
+                    }
+                    catch
+                    {
+                        Debug.LogError($"Table reference {currentLocalizedString.TableReference} could not be found. Please check your localization.");
+                    }
+                }
+            #endif
+            
+            choiceButton.GetComponentInChildren<TMP_Text>().text = choiceText;
             
             int choiceIndex = i;
             Button button = choiceButton.GetComponent<Button>();
