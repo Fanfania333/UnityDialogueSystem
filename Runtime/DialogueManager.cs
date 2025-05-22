@@ -81,7 +81,7 @@ public class DialogueManager : MonoBehaviour
             else
             {
                 characterPortrait = dialogueBox.transform.Find("PortraitFrame").Find("PortraitImage").GetComponent<Image>();
-                characterName = dialogueBox.transform.Find("SpeakerName").GetComponent<TMP_Text>();
+                characterName = dialogueBox.transform.Find("SpeakerFrame").Find("SpeakerName").GetComponent<TMP_Text>();
                 dialogueText = dialogueBox.transform.Find("Text").GetComponent<TMP_Text>();
 
                 string errorMessage = "Couldn't find the references to: ";

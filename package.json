@@ -1,6 +1,6 @@
 {
     "name": "com.fanfania.dialogue-system",
-    "version": "0.7.0",
+    "version": "0.7.1",
     "description": "This is a package that provides basic dialogue and tag functionality for RPG-like video games.",
     "displayName": "Fanfania's Dialogue System",
     "author": {
